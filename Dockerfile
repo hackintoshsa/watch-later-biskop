@@ -1,19 +1,19 @@
 # Stage 1: Build the Quarkus native executable
-FROM quay.io/quarkus/ubi-quarkus-maven:22.3.0-java17 AS build
+FROM maven:3.8.4-openjdk-17-slim AS build
 
 # Set the working directory inside the container
 WORKDIR /workspace
 
 # Copy the pom.xml and source code to the container
 COPY pom.xml /workspace/
-COPY src /workspace/src/
+
+COPY src/ /workspace/src/
 
 # Build the Quarkus application (native image)
 RUN ./mvnw clean package -Pnative -DskipTests
 
 # Stage 2: Final Image with Native executable
-FROM quay.io/quarkus/ubi-quarkus-native-image:22.3.0-java17
-
+FROM openjdk:17-slim
 # Set the working directory inside the container
 WORKDIR /src
 
