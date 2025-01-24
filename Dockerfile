@@ -10,7 +10,7 @@ COPY pom.xml /workspace/
 COPY src/ /workspace/src/
 
 # Build the Quarkus application (native image)
-RUN ./mvnw clean package -Pnative -DskipTests
+RUN mvn clean package -Pnative -DskipTests
 
 # Stage 2: Final Image with Native executable
 FROM openjdk:17-slim
