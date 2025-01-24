@@ -21,7 +21,7 @@ FROM openjdk:17-slim
 WORKDIR /src
 
 # Copy the native executable from the build stage to the final image
-COPY --from=build /workspace/target/quarkus-app/*-runner.jar /src/application.jar
+COPY --from=build /workspace/target/*-runner.jar /src/application.jar
 
 # Expose the application port
 EXPOSE 8080
