@@ -4,18 +4,10 @@ import com.hackintoshsa.implementation.UserRepositoryImpl;
 import com.hackintoshsa.implementation.WatchLaterRepositoryImpl;
 import com.hackintoshsa.models.User;
 import com.hackintoshsa.models.WatchLater;
-import com.hackintoshsa.repositories.UserRepository;
-import com.hackintoshsa.repositories.WatchLaterRepository;
-import io.netty.handler.codec.http.HttpResponseStatus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.SecurityContext;
 import lombok.extern.java.Log;
 import org.bson.types.ObjectId;
-import org.jboss.logging.Logger;
-
-import java.net.http.HttpResponse;
 import java.util.*;
 
 @Log

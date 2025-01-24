@@ -2,9 +2,6 @@ package com.hackintoshsa.models;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +9,7 @@ import org.bson.types.ObjectId;
 
 import java.util.Date;
 
-@MongoEntity(collection = "watch-later")
+@MongoEntity(collection = "watch-later", database = "biskop")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

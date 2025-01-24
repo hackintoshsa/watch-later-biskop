@@ -5,12 +5,11 @@ import io.quarkus.mongodb.panache.common.MongoEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.bson.types.ObjectId;
 
 import java.util.Date;
 import java.util.List;
 
-@MongoEntity(collection = "users")
+@MongoEntity(collection = "users", database = "biskop")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

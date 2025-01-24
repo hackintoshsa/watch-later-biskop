@@ -2,9 +2,7 @@ package com.hackintoshsa.services;
 
 import com.hackintoshsa.implementation.UserRepositoryImpl;
 import com.hackintoshsa.models.User;
-import com.hackintoshsa.repositories.UserRepository;
 import com.hackintoshsa.security.Config;
-import io.github.cdimascio.dotenv.Dotenv;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

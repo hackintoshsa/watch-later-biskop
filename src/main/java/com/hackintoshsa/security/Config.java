@@ -1,41 +1,16 @@
 package com.hackintoshsa.security;
 
-import com.hackintoshsa.models.User;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.Mailer;
-import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
-import io.smallrye.jwt.auth.principal.JWTCallerPrincipal;
-import io.smallrye.jwt.auth.principal.ParseException;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import lombok.extern.java.Log;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import io.smallrye.jwt.auth.principal.JWTParser;
-import org.eclipse.microprofile.jwt.JsonWebToken;
-import io.jsonwebtoken.Claims;
-
-
-
-
-import io.smallrye.jwt.build.Jwt;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.Claims;
-import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.JwtConsumer;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
-import org.jose4j.keys.X509Util;
-import org.jose4j.lang.JoseException;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.*;
@@ -45,19 +20,12 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.logging.Logger;
 
 
 @ApplicationScoped
 public class Config {
-    @ConfigProperty(name = "jwt.secret")
-    String jwtSecret;
-    @ConfigProperty(name = "quarkus.mailer.from")
-    String fromEmailAddr;
-    @ConfigProperty(name="app.baseUrl")
-    String baseUrl;
+
 
     private static final Logger log = Logger.getLogger(Config.class.getName());
 
