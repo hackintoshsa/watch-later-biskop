@@ -7,10 +7,13 @@ WORKDIR /workspace
 # Copy the pom.xml and source code to the container
 COPY pom.xml /workspace/
 
+RUN mvn dependency:go-offline
+
 COPY src/ /workspace/src/
 
+
 # Build the Quarkus application (native image)
-RUN mvn clean package -Pnative -DskipTests
+RUN mvn clean package -DskipTests
 
 # Stage 2: Final Image with Native executable
 FROM openjdk:17-slim
@@ -18,10 +21,10 @@ FROM openjdk:17-slim
 WORKDIR /src
 
 # Copy the native executable from the build stage to the final image
-COPY --from=build /workspace/target/*-runner /src/application
+COPY --from=build /workspace/target/quarkus-app/*-runner.jar /src/application.jar
 
 # Expose the application port
 EXPOSE 8080
 
 # Set the default command to run the native Quarkus application
-CMD ["/src/application"]
+CMD ["java", "-jar", "/src/application.jar"]
