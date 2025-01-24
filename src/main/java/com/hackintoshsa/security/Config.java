@@ -36,7 +36,11 @@ public class Config {
     @Inject
     JWTParser jwtParser;
 
-    Dotenv dotenv = Dotenv.load();
+
+      String envPrivateKey = System.getenv("JWT_SIGN_KEY_LOCATION");
+      String envBaseUrl = System.getenv("APP_BASE_URL");
+      String envEmail = System.getenv("FROM_EMAIL");
+      String envPublicKey = System.getenv("JWT_VERIFY_KEY_LOCATION");
 
 
     public String encodePassword(String password){
@@ -49,7 +53,7 @@ public class Config {
 
     public String generateToken(String email, String userId) {
         try{
-            PrivateKey privateKey = loadKeys(dotenv.get("JWT_SIGN_KEY_LOCATION"));
+            PrivateKey privateKey = loadKeys(envPrivateKey);
             long expirationTime = 1000 * 60 * 60; // 1 hour for access token expiration
 
             // Generate JWT signed with the RSA private key (RS256)
@@ -68,7 +72,7 @@ public class Config {
 
     public String generateRefreshToken(String email, String userId) {
         try {
-            PrivateKey privateKey = loadKeys(dotenv.get("JWT_SIGN_KEY_LOCATION")); // Same private key used for both access and refresh tokens
+            PrivateKey privateKey = loadKeys(envPrivateKey); // Same private key used for both access and refresh tokens
             long expirationTime = 1000 * 60 * 60 * 24 * 30; // 30 days for refresh token expiration
 
             // Generate JWT signed with the RSA private key (RS256) for the refresh token
@@ -88,7 +92,7 @@ public class Config {
     public void sendResetPasswordEmail(String email, String token) throws Exception{
         List<String> sendToEmails = new ArrayList<>();
         sendToEmails.add(email);
-        String resetLink = dotenv.get("APP_BASE_URL") + "/reset-password?token=" + token;
+        String resetLink = envBaseUrl + "/reset-password?token=" + token;
         String emailContent = String.format(
                 "<p>You are receiving this because you (or someone else) have requested the reset of the password for your account.</p>" +
                         "<p>Please click on the following link, or paste this into your browser to complete the process:</p>" +
@@ -98,7 +102,7 @@ public class Config {
         );
 
         Mail mail = Mail.withHtml(email, "Biskop - Password Reset Request", emailContent);
-        mail.setFrom(dotenv.get("FROM_EMAIL"));
+        mail.setFrom(envEmail);
         mail.setTo(sendToEmails);
         mail.setText(emailContent);
         mailer.send(mail);
@@ -156,7 +160,7 @@ public class Config {
 
 
     public boolean validateTokenInternal(String token) throws Exception {
-        PublicKey publicKey = loadPublicKey(dotenv.get("JWT_VERIFY_KEY_LOCATION"));
+        PublicKey publicKey = loadPublicKey(envPublicKey);
         if (publicKey == null) {
             System.out.println("Public key not loaded. Please call loadPublicKey() first.");
             return false;
@@ -217,7 +221,7 @@ public class Config {
     }
 
     private JwtClaims extractAndPrintClaims(String token) throws Exception {
-        PublicKey publicKey = loadPublicKey(dotenv.get("JWT_VERIFY_KEY_LOCATION"));
+        PublicKey publicKey = loadPublicKey(envPublicKey);
         try {
             // Validate the token format
             if (token == null || token.trim().isEmpty()) {
