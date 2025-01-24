@@ -25,8 +25,13 @@ WORKDIR /src
 
 #COPY --from=build /workspace/target/*-runner.jar /src/application.jar
 COPY --from=build /workspace/target/watch-later-biskop-1.0-SNAPSHOT.jar /src/application.jar
+COPY --from=build /workspace/target/quarkus-app/lib/ /src/lib/
+COPY --from=build /workspace/target/quarkus-app/*.jar /src/
+COPY --from=build /workspace/target/quarkus-app/app/ /src/app/
+COPY --from=build /workspace/target/quarkus-app/quarkus/ /src/quarkus/
+COPY --from=build /workspace/target/quarkus-app/quarkus-run.jar /src/quarkus-run.jar
 
 # Expose the application port
 EXPOSE 8080
 
-CMD ["java", "-jar", "/src/application.jar"]
+CMD ["java", "-jar", "/src/quarkus-run.jar"]
