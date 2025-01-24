@@ -12,19 +12,21 @@ RUN mvn dependency:go-offline
 COPY src/ /workspace/src/
 
 
-# Build the Quarkus application (native image)
+
 RUN mvn clean package -DskipTests
+
+# List files in /workspace/target for debugging
+RUN ls -al /workspace/target
 
 # Stage 2: Final Image with Native executable
 FROM openjdk:17-slim
 # Set the working directory inside the container
 WORKDIR /src
 
-# Copy the native executable from the build stage to the final image
-COPY --from=build /workspace/target/*-runner.jar /src/application.jar
+#COPY --from=build /workspace/target/*-runner.jar /src/application.jar
+COPY --from=build /workspace/target/watch-later-biskop-1.0-SNAPSHOT.jar /src/application.jar
 
 # Expose the application port
 EXPOSE 8080
 
-# Set the default command to run the native Quarkus application
 CMD ["java", "-jar", "/src/application.jar"]
