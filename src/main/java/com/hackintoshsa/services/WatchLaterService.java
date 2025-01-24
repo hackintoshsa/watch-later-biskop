@@ -33,6 +33,7 @@ public class WatchLaterService {
 
         // Retrieve the user from the database using ObjectId
         User user = userRepository.findById(new ObjectId(userId));
+        
         if (user == null) {
             response.put("status", 404);
             response.put("message", "User not found.");
@@ -77,23 +78,33 @@ public class WatchLaterService {
         try {
             ObjectId userObjectId = new ObjectId(userId);
 
+            log.warning("Fetching WatchLater items for userId: " + userId);
+
             // Fetch the watch later list from the repository using the user ID
             List<WatchLater> watchLaterList = watchLaterRepository.listAllByUserId(userObjectId);
+
 
             // Check if the list is empty and populate the response accordingly
             if (watchLaterList != null && !watchLaterList.isEmpty()) {
                 response.put("status", "success");
                 response.put("data", watchLaterList);
-                response.put("message", "All Watch Laters successfully.");
+                response.put("message", "Successfully fetched all watch later items");
                 response.put("statusCode", 200);
             } else {
                 response.put("status", "not_found");
                 response.put("StatusCode", 404);
                 response.put("message", "No watch later items found for this user.");
             }
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            log.warning("Invalid userId: " + userId + " " + e);
             response.put("status", "error");
-            response.put("message", "An error occurred while fetching watch later items: " + e.getMessage());
+            response.put("message", "Invalid user ID format.");
+            response.put("statusCode", 400);
+        } catch (Exception e) {
+            log.warning("Error fetching watch later items for userId: " + userId + " " + e);
+            response.put("status", "error");
+            response.put("message", "An error occurred while fetching watch later items.");
+            response.put("statusCode", 500);
         }
 
         return response;

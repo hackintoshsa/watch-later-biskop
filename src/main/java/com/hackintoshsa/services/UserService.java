@@ -4,10 +4,14 @@ import com.hackintoshsa.implementation.UserRepositoryImpl;
 import com.hackintoshsa.models.User;
 import com.hackintoshsa.repositories.UserRepository;
 import com.hackintoshsa.security.Config;
+import io.github.cdimascio.dotenv.Dotenv;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +26,7 @@ public class UserService {
     @Inject
     Config config;
 
-    public Map<String, Object> loginUser(String email, String password) {
+    public Map<String, Object> loginUser(String email, String password) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         Map<String, Object> response = new HashMap<>();
 
         // Validate input
@@ -56,17 +60,19 @@ public class UserService {
         }
 
         // Generate token and prepare response
-        String token = config.generateToken(existingUser);
+        String token = config.generateToken(existingUser.getEmail(), existingUser.id.toString());
+        String refreshToken = config.generateRefreshToken(existingUser.getEmail(), existingUser.id.toString());
         existingUser.setPassword(null); // Hide password in response
         response.put("status", 200);
         response.put("message", "Login successful.");
         response.put("data", existingUser);
         response.put("token", token);
+        response.put("refreshToken", refreshToken);
 
         return response;
     }
 
-    public Map<String, Object> registerUser(User user) {
+    public Map<String, Object> registerUser(User user) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         Map<String, Object> response = new HashMap<>();
 
         // Validate input
@@ -92,7 +98,7 @@ public class UserService {
         userRepositoryImpl.persist(user);
 
         // Generate token
-        String token = config.generateToken(user);
+        String token = config.generateToken(user.getEmail(), user.id.toString());
         user.setPassword(null); // Hide password in response
 
         response.put("status", 201);
@@ -157,5 +163,43 @@ public class UserService {
         response.put("message", "Password has been reset successfully.");
         return response;
     }
+
+    public Map<String, Object> refreshAccessToken(String refreshToken) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (refreshToken == null || !refreshToken.startsWith("Bearer ")) {
+            response.put("status", 400);
+            response.put("message", "Invalid or missing refresh token");
+            return response;
+        }
+
+        String rawToken = refreshToken.substring("Bearer ".length()).trim();
+
+        try {
+            // Validate the refresh token
+            if (config.validateRefreshToken(rawToken)) {
+                // Extract user details from the refresh token
+                String userId = config.extractUserIdFromToken(rawToken);
+                String email = config.extractEmail(rawToken);
+
+                // Generate a new access token
+                String newAccessToken = config.generateToken(email, userId);
+
+                // Prepare the response
+                response.put("status", 200);
+                response.put("token", newAccessToken);
+                return response;
+            } else {
+                response.put("status", 401);
+                response.put("message", "Invalid refresh token");
+            }
+        } catch (Exception e) {
+            response.put("status", 500);
+            response.put("message", "Error refreshing access token: " + e.getMessage());
+        }
+
+        return response;
+    }
+
 
 }
